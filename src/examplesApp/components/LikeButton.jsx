@@ -2,6 +2,8 @@
  * @jsx React.DOM
  */
 
+var React = require('react');
+
 var LikeButton = React.createClass({
 
 	getInitialState: function () {

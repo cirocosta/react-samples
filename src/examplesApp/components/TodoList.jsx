@@ -2,6 +2,12 @@
  * @jsx React.DOM
  */
 
+// TODO(ciro) rewrite this in terms of only
+// TodoList, and not TodoApp so that this keeps as
+// a component only, not an App ;)
+
+var React = require('React');
+
 var slice = Function.prototype.call.bind(Array.prototype.slice);
 
 /**
@@ -103,6 +109,5 @@ React.renderComponent(
 	<TodoApp />,
 	document.getElementById('example-todolist')
 );
-
 
 module.exports = TodoApp;
