@@ -4,11 +4,21 @@ While studying ReactJS i produced some sample code. This repository contains wha
 
 ## Install
 
-Having NodeJS and NPM properly set up, run:
+I separated this repository in two main sections: `React Only` and `Flux`.
+
+The first contains samples that came while studying ReactJS alone. The seconds, flux + react.
+
+### React-only
+
+Having NodeJS and NPM properly set up, go to `react-only` and run:
 
 ```sh
 $ npm install
 $ gulp build
 ```
 
-Then start a localserver and enjoy :smile:
+Then start a local server and enjoy :smile:
+
+### Flux
+
+`//TODO` :neckbeard:
