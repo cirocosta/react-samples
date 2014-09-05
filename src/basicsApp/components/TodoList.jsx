@@ -6,7 +6,7 @@
 // TodoList, and not TodoApp so that this keeps as
 // a component only, not an App ;)
 
-var React = require('React');
+var React = require('react');
 
 var slice = Function.prototype.call.bind(Array.prototype.slice);
 
@@ -104,10 +104,5 @@ var TodoApp = React.createClass({
 		);
 	}
 });
-
-React.renderComponent(
-	<TodoApp />,
-	document.getElementById('example-todolist')
-);
 
 module.exports = TodoApp;

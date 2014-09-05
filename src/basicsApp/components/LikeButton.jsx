@@ -25,9 +25,4 @@ var LikeButton = React.createClass({
 	}
 });
 
-React.renderComponent(
-	<LikeButton />,
-	document.getElementById('example-like')
-);
-
 module.exports = LikeButton;

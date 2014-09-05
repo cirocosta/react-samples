@@ -3,11 +3,15 @@
  * @jsx React.DOM
  */
 
-var React = require('react');
-var Router = require('react-router');
-var Route = Router.Route;
-var Routes = Router.Routes;
-var Link = Router.Link;
+var React = require('react')
+  , Router = require('react-router')
+  , Basics = require('./basicsApp/basicsApp.jsx')
+  , RedditApp = require('./redditApp/RedditApp.jsx')
+
+  , Route = Router.Route
+  , Routes = Router.Routes
+  , Link = Router.Link;
+
 
 var App = React.createClass({displayName: 'App',
   render: function () {
@@ -16,7 +20,8 @@ var App = React.createClass({displayName: 'App',
         React.DOM.header(null, 
           React.DOM.ul(null, 
             React.DOM.li(null, Link({to: "home"}, "Home")), 
-            React.DOM.li(null, Link({to: "helloworld"}, "HelloWorld"))
+            React.DOM.li(null, Link({to: "basics"}, "Basics")), 
+            React.DOM.li(null, Link({to: "redditapp"}, "RedditApp"))
           )
         ), 
 
@@ -26,18 +31,13 @@ var App = React.createClass({displayName: 'App',
   }
 });
 
-var HelloWorld = React.createClass({displayName: 'HelloWorld',
-  render: function () {
-    return (
-      React.DOM.div(null, React.DOM.h1(null, "HelloWorld!"))
-    );
-  }
-});
 
 var routes = (
   Routes({location: "history"}, 
     Route({name: "home", path: "/", handler: App}, 
-      Route({name: "helloworld", handler: HelloWorld}
+      Route({name: "basics", handler: Basics}
+      ), 
+      Route({name: "redditapp", handler: RedditApp}
       )
     )
   )
@@ -48,7 +48,7 @@ React.renderComponent(
   document.body
 );
 
-},{"react":192,"react-router":15}],2:[function(require,module,exports){
+},{"./basicsApp/basicsApp.jsx":193,"./redditApp/RedditApp.jsx":197,"react":192,"react-router":15}],2:[function(require,module,exports){
 /*!
  * The buffer module from node.js, for the browser.
  *
@@ -24122,7 +24122,401 @@ module.exports = warning;
 },{"./emptyFunction":150,"_process":6}],192:[function(require,module,exports){
 module.exports = require('./lib/React');
 
-},{"./lib/React":75}]},{},[1])
+},{"./lib/React":75}],193:[function(require,module,exports){
+/**
+ * @jsx React.DOM
+ */
+
+var React = require('react');
+var HelloWorld = require('./components/HelloWorld.jsx');
+var LikeButton = require('./components/LikeButton.jsx');
+var TodoList = require('./components/TodoList.jsx');
+
+var BasicsApp = React.createClass({displayName: 'BasicsApp',
+  render: function () {
+    return (
+      React.DOM.div(null, 
+        HelloWorld(null), 
+        LikeButton(null), 
+        TodoList(null)
+      )
+    );
+  }
+});
+
+module.exports = BasicsApp;
+
+
+},{"./components/HelloWorld.jsx":194,"./components/LikeButton.jsx":195,"./components/TodoList.jsx":196,"react":192}],194:[function(require,module,exports){
+/**
+ * @jsx React.DOM
+ */
+
+var React = require('react');
+
+// TODO make this data change (it was being
+// rendered with setTimeout)
+var HelloWorld = React.createClass({displayName: 'HelloWorld',
+  render: function () {
+    return (
+      React.DOM.p(null, 
+        "Hello, ", React.DOM.input({type: "text", placeholder: "Your Name Here"}), "!" + ' ' +
+        "Is is ", new Date().toTimeString()
+      )
+    );
+  }
+});
+
+module.exports = HelloWorld;
+
+},{"react":192}],195:[function(require,module,exports){
+/**
+ * @jsx React.DOM
+ */
+
+var React = require('react');
+
+var LikeButton = React.createClass({displayName: 'LikeButton',
+
+	getInitialState: function () {
+		return {liked: false};
+	},
+
+	handleClick: function (e) {
+		this.setState({liked: !this.state.liked});
+	},
+
+	render: function () {
+		var text = this.state.liked ? 'like' : 'unlike';
+
+		return (
+			React.DOM.p({onClick: this.handleClick}, 
+				"You ", text, " this. Click to toggle."
+			)
+		);
+	}
+});
+
+module.exports = LikeButton;
+
+},{"react":192}],196:[function(require,module,exports){
+/**
+ * @jsx React.DOM
+ */
+
+// TODO(ciro) rewrite this in terms of only
+// TodoList, and not TodoApp so that this keeps as
+// a component only, not an App ;)
+
+var React = require('react');
+
+var slice = Function.prototype.call.bind(Array.prototype.slice);
+
+/**
+ * Componente que representa uma Lista de Todos.
+ * Permite que o usuário clique sobre um item e
+ * então avisa ao App para deletar.
+ */
+var TodoList = React.createClass({displayName: 'TodoList',
+
+	handleClick: function (e) {
+		if (!(e.target && e.target.nodeName === 'LI'))
+			return;
+
+		var scope = this;
+
+		slice(e.target.parentNode.childNodes)
+			.some(function (elem, i) {
+				return elem === e.target
+					? (scope.props.onTodoDelete(i), true)
+					: false;
+			});
+	},
+
+	render: function () {
+		var createItem = function (itemText, i) {
+			return React.DOM.li({key: i}, itemText)
+		};
+
+		return React.DOM.ul({onClick: this.handleClick}, this.props.items.map(createItem))
+	}
+});
+
+
+/**
+ * Formulário que permite inserção de conteúdo
+ * no app. Observa o evento de 'change' em seu
+ * Input e avisa a aplicação quando o usuário
+ * submeter.
+ */
+var TodoForm = React.createClass({displayName: 'TodoForm',
+	getInitialState: function () {
+		return {text: ''}
+	},
+
+	handleSubmit: function (e) {
+		e.preventDefault();
+		this.props.onTodoSubmit(this.state.text);
+		this.setState({text: ''});
+	},
+
+	handleChange: function (e) {
+		this.setState({text: e.target.value});
+	},
+
+	render: function () {
+		return (
+			React.DOM.form({onSubmit: this.handleSubmit}, 
+				React.DOM.input({onChange: this.handleChange, type: "text", 
+							 placeholder: "Text ... ", value: this.state.text}), 
+
+				React.DOM.input({type: "submit", value: "add #" + this.props.number})
+			)
+		);
+	}
+});
+
+/**
+ * Aplicação em si. Mantém o estado mínimo
+ * (ítems da lista).
+ */
+var TodoApp = React.createClass({displayName: 'TodoApp',
+	getInitialState: function () {
+		return {items: ["dahora"]};
+	},
+
+	handleTodoSubmit: function (todo) {
+		this.setState({items: this.state.items.concat([todo])});
+	},
+
+	handleTodoDelete: function (index) {
+		var newItems = slice(this.state.items);
+		newItems.splice(index, 1);
+
+		this.setState({items: newItems});
+	},
+
+	render: function () {
+		return (
+			React.DOM.div(null, 
+				React.DOM.h3(null, "Todo List!"), 
+				TodoList({onTodoDelete: this.handleTodoDelete, items: this.state.items}), 
+				TodoForm({onTodoSubmit: this.handleTodoSubmit, number: this.state.items.length + 1})
+			)
+		);
+	}
+});
+
+module.exports = TodoApp;
+
+},{"react":192}],197:[function(require,module,exports){
+/**
+ * @jsx React.DOM
+ */
+
+var React = require('react');
+var Navigation = require('./components/Navigation.jsx');
+var StoryList = require('./components/StoryList.jsx');
+
+/**
+ * ReditApp contains the toplevel stuff that the
+ * Redit section of our examples needs.
+ *
+ * It is what is going to store all of the state
+ * of the application and then pass it to its
+ * children components as immutable props that
+ * they can render.
+ *
+ * This component will also provide some sort of
+ * navigation by registering a callback function
+ * into Navigation, which gets adivised of click
+ * events by registering a handler with the
+ * NavigationItem component.
+ */
+var ReditApp = React.createClass({displayName: 'ReditApp',
+  // The representation of ReditApp on its initial
+  // state is pretty clear. There's no current
+  // activeNavigationUrl (the user has not
+  // selected anything yet), there's no
+  // navigationItems (we didn't fetch it from the
+  // server) and there are no storyItems (the user
+  // didn't select a section that would provide
+  // those story items).
+  getInitialState: function () {
+    return ({
+      activeNavigationUrl: "",
+      navigationItems: [],
+      storyItems: [],
+      title: "Please select a sub"
+    });
+  },
+
+  // After the mounting of the component we are
+  // ready to fetch some stuff (the user is now
+  // seeing something) as the basic stuff is done.
+  componentDidMount: function () {
+    var scope = this;
+    var cbname = "fn" + Date.now();
+    var script = document.createElement("script");
+    script.src = "http://www.reddit.com/reddits.json?jsonp=" + cbname;
+
+    window[cbname] = function (jsonData) {
+      scope.setState({
+        navigationItems: jsonData.data.children
+      });
+
+      delete window[cbname];
+    };
+
+    document.head.appendChild(script);
+  },
+
+  // Here we declare a callback function to be
+  // executed each time that a user selects an
+  // item. This is going to be called by Navigation
+  setSelectedItem: function (item) {
+    var scope = this;
+    var cbname = "fn" + Date.now();
+    var script = document.createElement("script");
+
+    script.src = "http://www.reddit.com/" +
+                 item.data.url +
+                 ".json?sort=top&t=month&jsonp=" +
+                 cbname;
+
+    window[cbname] = function (jsonData) {
+      scope.setState({storyItems: jsonData.data.children});
+    };
+
+    document.head.appendChild(script);
+
+    this.setState({
+      activeNavigationUrl: item.data.url,
+      title: item.data.display_name
+    });
+  },
+
+  // here we set what will be the function to be
+  // called to actually render our component. As
+  // you can see we are nesting other components.
+  render: function () {
+    return (
+      React.DOM.div(null, 
+        React.DOM.h1(null, this.state.title), 
+        Navigation({activeUrl: this.state.activeNavigationUrl, 
+                    items: this.state.navigationItems, 
+                    itemSelected: this.setSelectedItem}), 
+        StoryList({items: this.state.storyItems})
+      )
+    );
+  }
+});
+
+module.exports = ReditApp;
+
+},{"./components/Navigation.jsx":198,"./components/StoryList.jsx":200,"react":192}],198:[function(require,module,exports){
+/**
+ * @jsx React.DOM
+ */
+
+var React = require('react');
+var NavigationItem = require('./NavigationItem.jsx');
+
+var Navigation = React.createClass({displayName: 'Navigation',
+  setSelectedItem: function (item) {
+    this.props.itemSelected(item);
+  },
+
+  render: function () {
+    var scope = this;
+
+    var items = this.props.items.map(function (item) {
+      return (
+        NavigationItem({key: item.data.id, 
+                        item: item, 
+                        itemSelected: scope.setSelectedItem, 
+                        selected: item.data.url === scope.props.activeUrl})
+      );
+    });
+
+    return (
+      React.DOM.div({className: "Navigation"}, 
+        React.DOM.div({className: "header"}, "Navigation"), 
+        React.DOM.ul(null, 
+          items
+        )
+      )
+    );
+  }
+});
+
+module.exports = Navigation;
+
+},{"./NavigationItem.jsx":199,"react":192}],199:[function(require,module,exports){
+/**
+ * @jsx React.DOM
+ */
+
+var React = require('react');
+
+var NavigationItem = React.createClass({displayName: 'NavigationItem',
+  handleClick: function (e) {
+    this.props.onItemSelected(this.props.item);
+  },
+
+  render: function () {
+    return (
+      React.DOM.li({onClick: this.handleClick, className: this.props.selected ? "selected" : ""}, 
+        this.props.item.data.display_name
+      )
+    );
+  }
+});
+
+module.exports = NavigationItem;
+
+},{"react":192}],200:[function(require,module,exports){
+/**
+ * @jsx React.DOM
+ */
+
+var React = require('react');
+
+var StoryList = React.createClass({displayName: 'StoryList',
+  render: function () {
+    var storyNodes = this.props.items.map(function (item) {
+      return (
+        React.DOM.tr({key: item.data.url}, 
+          React.DOM.td(null, 
+            React.DOM.p({className: "score"}, item.data.score)
+          ), 
+          React.DOM.td(null, 
+            React.DOM.p({className: "title"}, 
+              React.DOM.a({href: item.data.url}, 
+                item.data.title
+              )
+            ), 
+            React.DOM.p({className: "author"}, 
+              "By ", React.DOM.b(null, item.data.author)
+            )
+          )
+        )
+      );
+    });
+
+    return (
+      React.DOM.table(null, 
+        React.DOM.tbody(null, 
+          storyNodes
+        )
+      )
+    );
+  }
+});
+
+module.exports = StoryList;
+
+},{"react":192}]},{},[1])
 
 
 //# sourceMappingURL=bundle.js.map

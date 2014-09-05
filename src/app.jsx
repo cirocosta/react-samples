@@ -2,11 +2,15 @@
  * @jsx React.DOM
  */
 
-var React = require('react');
-var Router = require('react-router');
-var Route = Router.Route;
-var Routes = Router.Routes;
-var Link = Router.Link;
+var React = require('react')
+  , Router = require('react-router')
+  , Basics = require('./basicsApp/basicsApp.jsx')
+  , RedditApp = require('./redditApp/RedditApp.jsx')
+
+  , Route = Router.Route
+  , Routes = Router.Routes
+  , Link = Router.Link;
+
 
 var App = React.createClass({
   render: function () {
@@ -15,7 +19,8 @@ var App = React.createClass({
         <header>
           <ul>
             <li><Link to="home">Home</Link></li>
-            <li><Link to="helloworld">HelloWorld</Link></li>
+            <li><Link to="basics">Basics</Link></li>
+            <li><Link to="redditapp">RedditApp</Link></li>
           </ul>
         </header>
 
@@ -25,18 +30,13 @@ var App = React.createClass({
   }
 });
 
-var HelloWorld = React.createClass({
-  render: function () {
-    return (
-      <div><h1>HelloWorld!</h1></div>
-    );
-  }
-});
 
 var routes = (
   <Routes location="history">
     <Route name="home" path="/" handler={App}>
-      <Route name="helloworld" handler={HelloWorld}>
+      <Route name="basics" handler={Basics}>
+      </Route>
+      <Route name="redditapp" handler={RedditApp}>
       </Route>
     </Route>
   </Routes>
