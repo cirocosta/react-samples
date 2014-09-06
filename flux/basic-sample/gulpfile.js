@@ -1,15 +1,16 @@
 'use strict';
 
 var gulp = require('gulp')
-  , path = require('path')
-  , del = require('del')
+  , jshint = require('gulp-jshint')
   , livereload = require('gulp-livereload')
+  , source = require('vinyl-source-stream')
   , browserify = require('browserify')
   , reactify = require('reactify')
-  , es6ify = require('es6ify')
   , exorcist = require('exorcist')
-  , buffer = require('vinyl-buffer')
-  , source = require('vinyl-source-stream')
+  , es6ify = require('es6ify')
+  , path = require('path')
+  , del = require('del')
+
   , mapfile = path.resolve(__dirname, './dist/bundle.js.map');
 
 
@@ -17,7 +18,13 @@ gulp.task('clean', function (done) {
   del(['./dist/'], done);
 });
 
-gulp.task('build', ['clean'], function () {
+gulp.task('lint', function () {
+  gulp.src(['./js/**/*', './gulpfile.js'])
+    .pipe(jshint('.jshintrc'))
+    .pipe(jshint.reporter('jshint-stylish'));
+});
+
+gulp.task('build', ['lint', 'clean'], function () {
   browserify({
       entries: './js/app.js',
       debug: true
@@ -27,7 +34,7 @@ gulp.task('build', ['clean'], function () {
     .bundle()
     .pipe(exorcist(mapfile))
     .pipe(source('bundle.js'))
-    .pipe(gulp.dest('./dist/'))
+    .pipe(gulp.dest('./dist/'));
 });
 
 gulp.task('watch', function () {

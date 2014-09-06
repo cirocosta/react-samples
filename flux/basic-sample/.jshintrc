@@ -1,0 +1,10 @@
+{
+	"esnext": true,
+	"globalstrict": true,
+	"node": true,
+	"laxcomma": true,
+	"maxlen": 79,
+	"quotmark": "single",
+	"curly": false,
+	"bitwise": false
+}
