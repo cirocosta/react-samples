@@ -42,6 +42,10 @@ function create (text) {
   };
 }
 
+function areNotAllComplete () {
+  return _todos.some(elem => elem.complete ? false : true);
+}
+
 function destroy (id) {
   delete _todos[id];
 }
@@ -54,18 +58,33 @@ function destroy (id) {
  * letting others register with them.
  */
 var TodoStore = merge(EventEmitter.prototype, {
+  // exposes the data (which is private, contained
+  // in the module's closure) so that the view can
+  // fetch it when it want's to get the state. We
+  // often pass the entire state of the store down
+  // the chain of views in a single object so that
+  // different descendants are able to use what
+  // they need.
   getAll () {
     return _todos;
   },
 
+  // emits the 'change' event to whatever
+  // controller-views are listening to it. This
+  // will actually be fired in the callback that
+  // we provided to the Dispatcher when we do its
+  // registration (below).
   emitChange () {
     this.emit(CHANGE_EVENT);
   },
 
+  // provide do our controller-views to register
+  // themselves with the store.
   addChangeListener (cb) {
     this.on(CHANGE_EVENT, cb);
   },
 
+  // opposite of addChangeListener
   removeChangeListener (cb) {
     this.removeListener(CHANGE_EVENT, cb);
   },
@@ -105,6 +124,14 @@ var TodoStore = merge(EventEmitter.prototype, {
         destroy(action.id);
         TodoStore.emitChange();
         break;
+
+      case TodoConstants.TODO_DESTROY:
+        destroy(action.id);
+        TodoStore.emitChange();
+        break;
+
+      default:
+        throw new Error('No handle for ' + action.actionType + ' action.');
     }
 
     // so that the promise is resolved, and not
@@ -112,5 +139,6 @@ var TodoStore = merge(EventEmitter.prototype, {
     return true;
   })
 });
+
 
 module.exports = TodoStore;

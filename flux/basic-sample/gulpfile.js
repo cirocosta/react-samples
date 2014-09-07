@@ -19,18 +19,18 @@ gulp.task('clean', function (done) {
 });
 
 gulp.task('lint', function () {
-  gulp.src(['./js/**/*', './gulpfile.js'])
+  return gulp.src(['./js/**/*.js', './gulpfile.js'])
     .pipe(jshint('.jshintrc'))
     .pipe(jshint.reporter('jshint-stylish'));
 });
 
 gulp.task('build', ['lint', 'clean'], function () {
-  browserify({
-      entries: './js/app.js',
+  return browserify({
+      entries: './js/app.jsx',
       debug: true
     })
     .transform(reactify)
-    .transform(es6ify.configure(/^(?!.*node_modules)+.+\.js$/))
+    .transform(es6ify.configure(/^(?!.*node_modules)+.+\.(js|jsx)$/))
     .bundle()
     .pipe(exorcist(mapfile))
     .pipe(source('bundle.js'))
