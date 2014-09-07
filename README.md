@@ -21,4 +21,13 @@ Then start a local server and enjoy :smile:
 
 ### Flux
 
+- [x] todo-sample
+- [ ] chat-sample
+
+`//TODO` :neckbeard:
+
+### Jest
+
+Needs docs, some stuff already implemented.
+
 `//TODO` :neckbeard:
