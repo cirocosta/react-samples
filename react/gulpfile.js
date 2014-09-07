@@ -13,8 +13,6 @@ var gulp = require('gulp')
   , del = require('del');
 
 var mapfile = path.join(__dirname, '/dist/bundle.js.map')
-var minmapfile = path.join(__dirname, '/dist/bundle.min.js.map')
-
 
 // TODO(ciro) i don't remember if jest fits well
 // with gulp, but if it does, then i'd be cool to

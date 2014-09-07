@@ -5,7 +5,6 @@
 var React = require('react');
 
 var LikeButton = React.createClass({
-
 	getInitialState: function () {
 		return {liked: false};
 	},
@@ -15,11 +14,11 @@ var LikeButton = React.createClass({
 	},
 
 	render: function () {
-		var text = this.state.liked ? 'like' : 'unlike';
+		var text = this.state.liked ? 'unlike' : 'like';
 
 		return (
 			<p onClick={this.handleClick}>
-				You {text} this. Click to toggle.
+				{text}
 			</p>
 		);
 	}

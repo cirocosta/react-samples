@@ -1,9 +1,21 @@
 {
   "name": "react-samples",
-  "version": "1.0.0",
-  "description": "Some samples i produced while learning ReactJS",
   "author": "Ciro S. Costa <ciro9758@gmail.com> (http://www.cirocosta.com/)",
   "license": "MIT",
+  "jest": {
+    "scriptPreprocessor": "./utils/jsx-preprocessor.js",
+    "unmockedModulePathPatterns": [
+      "./node_modules/react"
+    ],
+    "testFileExtensions": [
+      "js",
+      "jsx"
+    ],
+    "testDirectoryName": "tests"
+  },
+  "scripts": {
+    "test": "jest"
+  },
   "devDependencies": {
     "browserify": "^5.11.0",
     "del": "^0.1.2",
@@ -17,11 +29,13 @@
     "gulp-sass": "^0.7.3",
     "gulp-uglify": "^1.0.1",
     "jest-cli": "^0.1.18",
+    "react-tools": "^0.11.1",
     "reactify": "^0.14.0",
     "vinyl-buffer": "0.0.0",
     "vinyl-source-stream": "^0.1.1"
   },
   "dependencies": {
+    "react": "^0.11.1",
     "react-router": "^0.7.0",
     "showdown": "^0.3.1"
   }
