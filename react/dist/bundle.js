@@ -48,7 +48,7 @@ React.renderComponent(
   document.body
 );
 
-},{"./basicsApp/basicsApp.jsx":193,"./redditApp/RedditApp.jsx":197,"react":192,"react-router":15}],2:[function(require,module,exports){
+},{"./basicsApp/basicsApp.jsx":193,"./redditApp/RedditApp.jsx":199,"react":192,"react-router":15}],2:[function(require,module,exports){
 /*!
  * The buffer module from node.js, for the browser.
  *
@@ -24130,7 +24130,7 @@ module.exports = require('./lib/React');
 var React = require('react');
 var HelloWorld = require('./components/HelloWorld.jsx');
 var LikeButton = require('./components/LikeButton.jsx');
-var TodoList = require('./components/TodoList.jsx');
+var TodoApp = require('./components/TodoApp.jsx');
 
 var BasicsApp = React.createClass({displayName: 'BasicsApp',
   render: function () {
@@ -24138,7 +24138,7 @@ var BasicsApp = React.createClass({displayName: 'BasicsApp',
       React.DOM.div(null, 
         HelloWorld(null), 
         LikeButton(null), 
-        TodoList(null)
+        TodoApp(null)
       )
     );
   }
@@ -24147,7 +24147,7 @@ var BasicsApp = React.createClass({displayName: 'BasicsApp',
 module.exports = BasicsApp;
 
 
-},{"./components/HelloWorld.jsx":194,"./components/LikeButton.jsx":195,"./components/TodoList.jsx":196,"react":192}],194:[function(require,module,exports){
+},{"./components/HelloWorld.jsx":194,"./components/LikeButton.jsx":195,"./components/TodoApp.jsx":196,"react":192}],194:[function(require,module,exports){
 /**
  * @jsx React.DOM
  */
@@ -24157,11 +24157,25 @@ var React = require('react');
 // TODO make this data change (it was being
 // rendered with setTimeout)
 var HelloWorld = React.createClass({displayName: 'HelloWorld',
+  getInitialState: function () {
+    return {
+      currentTime: new Date().toTimeString()
+    };
+  },
+
+  componentDidMount: function () {
+    setInterval(function () {
+      this.setState({
+        currentTime: new Date().toTimeString()
+      });
+    }.bind(this), 2000);
+  },
+
   render: function () {
     return (
       React.DOM.p(null, 
         "Hello, ", React.DOM.input({type: "text", placeholder: "Your Name Here"}), "!" + ' ' +
-        "Is is ", new Date().toTimeString()
+        "It is ", this.state.currentTime
       )
     );
   }
@@ -24177,7 +24191,6 @@ module.exports = HelloWorld;
 var React = require('react');
 
 var LikeButton = React.createClass({displayName: 'LikeButton',
-
 	getInitialState: function () {
 		return {liked: false};
 	},
@@ -24187,11 +24200,11 @@ var LikeButton = React.createClass({displayName: 'LikeButton',
 	},
 
 	render: function () {
-		var text = this.state.liked ? 'like' : 'unlike';
+		var text = this.state.liked ? 'unlike' : 'like';
 
 		return (
 			React.DOM.p({onClick: this.handleClick}, 
-				"You ", text, " this. Click to toggle."
+				text
 			)
 		);
 	}
@@ -24204,12 +24217,96 @@ module.exports = LikeButton;
  * @jsx React.DOM
  */
 
-// TODO(ciro) rewrite this in terms of only
-// TodoList, and not TodoApp so that this keeps as
-// a component only, not an App ;)
+'use strict';
+
+var React = require('react');
+var TodoList = require('./TodoList.jsx');
+var TodoForm = require('./TodoForm.jsx');
+
+/**
+ * Aplicação em si. Mantém o estado mínimo
+ * (ítems da lista).
+ */
+var TodoApp = React.createClass({displayName: 'TodoApp',
+  getInitialState: function () {
+    return {items: []};
+  },
+
+  handleTodoSubmit: function (todo) {
+    this.setState({items: this.state.items.concat([todo])});
+  },
+
+  handleTodoDelete: function (index) {
+    var newItems = Array.prototype.slice.call(this.state.items);
+    newItems.splice(index, 1);
+
+    this.setState({items: newItems});
+  },
+
+  render: function () {
+    return (
+      React.DOM.div(null, 
+        React.DOM.h3(null, "Todo List!"), 
+        TodoList({onTodoDelete: this.handleTodoDelete, items: this.state.items}), 
+        TodoForm({onTodoSubmit: this.handleTodoSubmit, number: this.state.items.length + 1})
+      )
+    );
+  }
+});
+
+module.exports = TodoApp;
+
+},{"./TodoForm.jsx":197,"./TodoList.jsx":198,"react":192}],197:[function(require,module,exports){
+/**
+ * @jsx React.DOM
+ */
+
+'use strict';
+
+/**
+ * Formulário que permite inserção de conteúdo
+ * no app. Observa o evento de 'change' em seu
+ * Input e avisa a aplicação quando o usuário
+ * submeter.
+ */
 
 var React = require('react');
 
+var TodoForm = React.createClass({displayName: 'TodoForm',
+  getInitialState: function () {
+    return {text: ''}
+  },
+
+  handleSubmit: function (e) {
+    e.preventDefault();
+    this.props.onTodoSubmit(this.state.text);
+    this.setState({text: ''});
+  },
+
+  handleChange: function (e) {
+    this.setState({text: e.target.value});
+  },
+
+  render: function () {
+    return (
+      React.DOM.form({onSubmit: this.handleSubmit}, 
+        React.DOM.input({onChange: this.handleChange, type: "text", 
+               placeholder: "Text ... ", value: this.state.text}), 
+
+        React.DOM.input({type: "submit", value: "add #" + this.props.number})
+      )
+    );
+  }
+});
+
+module.exports = TodoForm;
+
+},{"react":192}],198:[function(require,module,exports){
+/**
+ * @jsx React.DOM
+ */
+
+var React = require('react');
 var slice = Function.prototype.call.bind(Array.prototype.slice);
 
 /**
@@ -24223,93 +24320,30 @@ var TodoList = React.createClass({displayName: 'TodoList',
 		if (!(e.target && e.target.nodeName === 'LI'))
 			return;
 
-		var scope = this;
-
 		slice(e.target.parentNode.childNodes)
-			.some(function (elem, i) {
+			.some((function (elem, i) {
 				return elem === e.target
-					? (scope.props.onTodoDelete(i), true)
+					? (this.props.onTodoDelete(i), true)
 					: false;
-			});
+			}).bind(this));
 	},
 
 	render: function () {
-		var createItem = function (itemText, i) {
-			return React.DOM.li({key: i}, itemText)
-		};
+    var items = this.props.items.map(function (text, i) {
+      return React.DOM.li({key: i}, text)
+    });
 
-		return React.DOM.ul({onClick: this.handleClick}, this.props.items.map(createItem))
-	}
-});
-
-
-/**
- * Formulário que permite inserção de conteúdo
- * no app. Observa o evento de 'change' em seu
- * Input e avisa a aplicação quando o usuário
- * submeter.
- */
-var TodoForm = React.createClass({displayName: 'TodoForm',
-	getInitialState: function () {
-		return {text: ''}
-	},
-
-	handleSubmit: function (e) {
-		e.preventDefault();
-		this.props.onTodoSubmit(this.state.text);
-		this.setState({text: ''});
-	},
-
-	handleChange: function (e) {
-		this.setState({text: e.target.value});
-	},
-
-	render: function () {
 		return (
-			React.DOM.form({onSubmit: this.handleSubmit}, 
-				React.DOM.input({onChange: this.handleChange, type: "text", 
-							 placeholder: "Text ... ", value: this.state.text}), 
-
-				React.DOM.input({type: "submit", value: "add #" + this.props.number})
-			)
-		);
+      React.DOM.ul({onClick: this.handleClick}, 
+        items
+      )
+    );
 	}
 });
 
-/**
- * Aplicação em si. Mantém o estado mínimo
- * (ítems da lista).
- */
-var TodoApp = React.createClass({displayName: 'TodoApp',
-	getInitialState: function () {
-		return {items: ["dahora"]};
-	},
+module.exports = TodoList;
 
-	handleTodoSubmit: function (todo) {
-		this.setState({items: this.state.items.concat([todo])});
-	},
-
-	handleTodoDelete: function (index) {
-		var newItems = slice(this.state.items);
-		newItems.splice(index, 1);
-
-		this.setState({items: newItems});
-	},
-
-	render: function () {
-		return (
-			React.DOM.div(null, 
-				React.DOM.h3(null, "Todo List!"), 
-				TodoList({onTodoDelete: this.handleTodoDelete, items: this.state.items}), 
-				TodoForm({onTodoSubmit: this.handleTodoSubmit, number: this.state.items.length + 1})
-			)
-		);
-	}
-});
-
-module.exports = TodoApp;
-
-},{"react":192}],197:[function(require,module,exports){
+},{"react":192}],199:[function(require,module,exports){
 /**
  * @jsx React.DOM
  */
@@ -24414,7 +24448,7 @@ var ReditApp = React.createClass({displayName: 'ReditApp',
 
 module.exports = ReditApp;
 
-},{"./components/Navigation.jsx":198,"./components/StoryList.jsx":200,"react":192}],198:[function(require,module,exports){
+},{"./components/Navigation.jsx":200,"./components/StoryList.jsx":202,"react":192}],200:[function(require,module,exports){
 /**
  * @jsx React.DOM
  */
@@ -24452,7 +24486,7 @@ var Navigation = React.createClass({displayName: 'Navigation',
 
 module.exports = Navigation;
 
-},{"./NavigationItem.jsx":199,"react":192}],199:[function(require,module,exports){
+},{"./NavigationItem.jsx":201,"react":192}],201:[function(require,module,exports){
 /**
  * @jsx React.DOM
  */
@@ -24475,7 +24509,7 @@ var NavigationItem = React.createClass({displayName: 'NavigationItem',
 
 module.exports = NavigationItem;
 
-},{"react":192}],200:[function(require,module,exports){
+},{"react":192}],202:[function(require,module,exports){
 /**
  * @jsx React.DOM
  */
