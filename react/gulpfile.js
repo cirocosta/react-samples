@@ -22,11 +22,6 @@ var gulp = require('gulp')
 
 var mapfile = path.join(__dirname, '/dist/js/bundle.js.map')
 
-// TODO(ciro) i don't remember if jest fits well
-// with gulp, but if it does, then i'd be cool to
-// use it here (although we could keep with it
-// running in scripts.test)
-
 
 gulp.task('clean', function (done) {
   del(['./dist/js/', './dist/jcss/'], done);
