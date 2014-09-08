@@ -5,6 +5,7 @@
 
 var React = require('react')
   , Router = require('react-router')
+
   , Basics = require('./basicsApp/basicsApp.jsx')
   , RedditApp = require('./redditApp/RedditApp.jsx')
 
@@ -13,15 +14,15 @@ var React = require('react')
   , Link = Router.Link;
 
 
-var App = React.createClass({displayName: 'App',
+var Home = React.createClass({displayName: 'Home',
   render: function () {
     return (
       React.DOM.div(null, 
-        React.DOM.header(null, 
+        React.DOM.div({className: "Home"}, 
           React.DOM.ul(null, 
             React.DOM.li(null, Link({to: "home"}, "Home")), 
             React.DOM.li(null, Link({to: "basics"}, "Basics")), 
-            React.DOM.li(null, Link({to: "redditapp"}, "RedditApp"))
+            React.DOM.li(null, Link({to: "redditapp"}, "Reddit"))
           )
         ), 
 
@@ -34,7 +35,7 @@ var App = React.createClass({displayName: 'App',
 
 var routes = (
   Routes({location: "history"}, 
-    Route({name: "home", path: "/", handler: App}, 
+    Route({name: "home", path: "/", handler: Home}, 
       Route({name: "basics", handler: Basics}
       ), 
       Route({name: "redditapp", handler: RedditApp}
@@ -24290,9 +24291,10 @@ var TodoForm = React.createClass({displayName: 'TodoForm',
   render: function () {
     return (
       React.DOM.form({onSubmit: this.handleSubmit}, 
-        React.DOM.input({onChange: this.handleChange, type: "text", 
-               placeholder: "Text ... ", value: this.state.text}), 
-
+        React.DOM.input({onChange: this.handleChange, 
+               type: "text", 
+               placeholder: "Text ... ", 
+               value: this.state.text}), 
         React.DOM.input({type: "submit", value: "add #" + this.props.number})
       )
     );
