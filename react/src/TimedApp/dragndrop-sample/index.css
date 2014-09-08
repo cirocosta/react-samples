@@ -1,0 +1,21 @@
+.column {
+	height: 150px;
+	width: 150px;
+	float: left;
+	background-color: #ccc;
+	margin-left: 10px;
+	text-align: center;
+	cursor: move;
+	border: 2px solid black;
+}
+
+.column.over {
+	border: 2px dashed black;
+}
+
+.column header {
+	position: relative;
+	padding-top: 50px;
+	font-size: 30px;
+}
+

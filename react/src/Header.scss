@@ -1,0 +1,25 @@
+$colorPositive: #EDEDED;
+$colorNegative: #333333;
+
+.Home {
+	ul {
+		padding: 0;
+		margin: 0;
+		background-color: $colorPositive;
+		list-style: none;
+
+		li {
+			display: inline;
+
+			a {
+				padding: 2px 10px;
+				display: inline-block;
+
+				background-color: $colorPositive;
+				color: $colorNegative;
+				text-decoration: none;
+				border-bottom: 3px solid $colorPositive;
+			}
+		}
+	}
+}
