@@ -9,16 +9,6 @@ require('harmony-reflect');
  * react-tools es6 transform dont provide
  * proxies as the implementation would affect
  * other things performance.
- *
- * Another point is that in the 'get' method we
- * should not be returning undefined to indicate
- * error, but a process.exit(1) to terminate
- * after directing the message do stdout with
- * console.error. Jest seems to be facing an
- * issue with process.exit() so i'm currently
- * returning undefined as this will make the
- * test fail and, by consequence, notify us that
- * there is a propType that wasn't defined.
  */
 
 var PropertyValidationMixin = {
@@ -33,12 +23,10 @@ var PropertyValidationMixin = {
     this.props = new Proxy(rawProps, {
       get: (obj, prop, receiver) => {
         if (prop === 'ref' || prop === 'key')
-          return (console.error('Shouldn\'t be defining props for ', prop),
-                  undefined);
+          throw new Error('Shouldn\'t be defining props for ' + prop);
 
         if (!(prop in propTypes))
-          return (console.error(prop, ' not specified in propTypes.'),
-                  undefined);
+          throw new Error(prop + ' not specified in propTypes.');
 
         return Reflect.get(obj, prop, receiver);
       }
