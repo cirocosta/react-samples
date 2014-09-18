@@ -5,7 +5,6 @@
 'use strict';
 
 var React = require('react/addons');
-var PropertyValidationMixin = require('./PropertyValidationMixin.jsx');
 
 var SwapCheckbox = React.createClass({
   propTypes: {
@@ -18,12 +17,6 @@ var SwapCheckbox = React.createClass({
       isChecked: false
     };
   },
-
-  mixins: (() => {
-    return process.env.NODE_ENV === 'development' ?
-      [PropertyValidationMixin] :
-      [];
-  })(),
 
   handleChange () {
     this.setState({
