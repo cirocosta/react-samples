@@ -12,19 +12,19 @@ var SwapCheckbox = React.createClass({
     labelOff: React.PropTypes.string.isRequired
   },
 
-  getInitialState: function () {
+  getInitialState () {
     return {
       isChecked: false
-    }
+    };
   },
 
-  handleChange: function () {
+  handleChange () {
     this.setState({
       isChecked: !this.state.isChecked
     });
   },
 
-  render: function () {
+  render () {
     return (
       <label>
         <input type="checkbox"

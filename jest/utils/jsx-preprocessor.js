@@ -5,6 +5,8 @@ module.exports = {
     if (!path.match(/\.jsx$/))
       return src;
 
-    return ReactTools.transform(src);
+    return ReactTools.transform(src, {
+      harmony: true
+    });
   }
 };
