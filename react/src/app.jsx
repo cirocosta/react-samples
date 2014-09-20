@@ -2,6 +2,8 @@
  * @jsx React.DOM
  */
 
+require('./Header.scss');
+
 var React = require('react')
   , Router = require('react-router')
 

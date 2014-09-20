@@ -2,6 +2,9 @@
  * @jsx React.DOM
  */
 
+if (process.env.NODE_ENV !== 'test')
+  require('./LikeButton.scss');
+
 var React = require('react');
 
 var LikeButton = React.createClass({
@@ -17,7 +20,7 @@ var LikeButton = React.createClass({
 		var text = this.state.liked ? 'unlike' : 'like';
 
 		return (
-			<p onClick={this.handleClick}>
+			<p className="LikeButton" onClick={this.handleClick}>
 				{text}
 			</p>
 		);

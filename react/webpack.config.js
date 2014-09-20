@@ -1,5 +1,7 @@
 'use strict';
 
+var webpack = require('webpack');
+
 module.exports = {
   entry: './src/app.jsx',
   output: {
@@ -14,5 +16,12 @@ module.exports = {
                                 __dirname + '/src'},
       {test: /\.(js|jsx)$/, loader: 'jsx-loader?harmony'}
     ]
-  }
+  },
+  plugins: [
+    new webpack.DefinePlugin({
+      'process.env': {
+        NODE_ENV: JSON.stringify(process.env.NODE_ENV || 'development'),
+      }
+    })
+  ]
 };
